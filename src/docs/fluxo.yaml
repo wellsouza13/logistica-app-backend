@@ -1,0 +1,22 @@
+paths:
+  /api/fluxo/iniciar:
+    post:
+      summary: Inicia um fluxo de transporte (protegido)
+      tags:
+        - Fluxo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                veiculoId:
+                  type: string
+      responses:
+        200:
+          description: Fluxo criado com sucesso
+        401:
+          description: Não autorizado
