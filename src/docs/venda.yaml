@@ -1,0 +1,442 @@
+paths:
+  /api/vendas:
+    post:
+      summary: Registrar nova venda
+      tags:
+        - Vendas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clienteId:
+                  type: integer
+                  description: ID do cliente (opcional)
+                observacao:
+                  type: string
+                  description: Observação da venda
+                itens:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      estoqueId:
+                        type: integer
+                        description: ID do item de estoque
+                      quantidade:
+                        type: integer
+                        description: Quantidade vendida
+                      precoUnitario:
+                        type: number
+                        description: Preço unitário do item
+                  required:
+                    - estoqueId
+                    - quantidade
+                    - precoUnitario
+              required:
+                - itens
+      responses:
+        201:
+          description: Venda registrada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Venda registrada com sucesso!"
+                  venda:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clienteId:
+                        type: integer
+                        example: 1
+                      vendedorId:
+                        type: integer
+                        example: 1
+                      dataVenda:
+                        type: string
+                        format: date-time
+                        example: "2024-01-15T10:30:00Z"
+                      total:
+                        type: number
+                        example: 52.50
+                      status:
+                        type: string
+                        example: "pendente"
+                      observacao:
+                        type: string
+                        example: "Venda realizada via movimentação"
+                      itens:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            vendaId:
+                              type: integer
+                              example: 1
+                            estoqueId:
+                              type: integer
+                              example: 1
+                            quantidade:
+                              type: integer
+                              example: 5
+                            precoUnitario:
+                              type: number
+                              example: 10.50
+                            subtotal:
+                              type: number
+                              example: 52.50
+                            estoque:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                produto:
+                                  type: string
+                                unidade:
+                                  type: string
+                      cliente:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          nome:
+                            type: string
+                          email:
+                            type: string
+                      vendedor:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          nome:
+                            type: string
+                          matricula:
+                            type: string
+              example:
+                success: true
+                message: "Venda registrada com sucesso!"
+                venda:
+                  id: 1
+                  clienteId: 1
+                  vendedorId: 1
+                  dataVenda: "2024-01-15T10:30:00Z"
+                  total: 52.50
+                  status: "pendente"
+                  observacao: "Venda realizada via movimentação"
+                  itens:
+                    - id: 1
+                      vendaId: 1
+                      estoqueId: 1
+                      quantidade: 5
+                      precoUnitario: 10.50
+                      subtotal: 52.50
+                      estoque:
+                        id: 1
+                        produto: "Produto A"
+                        unidade: "un"
+                  cliente:
+                    id: 1
+                    nome: "Cliente A"
+                    email: "cliente@email.com"
+                  vendedor:
+                    id: 1
+                    nome: "João Silva"
+                    matricula: "123"
+        400:
+          description: Dados inválidos
+        401:
+          description: Não autorizado
+        404:
+          description: Item de estoque não encontrado
+        500:
+          description: Erro interno no servidor
+    get:
+      summary: Listar vendas com filtros
+      tags:
+        - Vendas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dataInicio
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Data de início (YYYY-MM-DD)
+        - name: dataFim
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Data de fim (YYYY-MM-DD)
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pendente, aprovada, cancelada]
+          description: Status da venda
+        - name: vendedorId
+          in: query
+          schema:
+            type: integer
+          description: ID do vendedor
+        - name: clienteId
+          in: query
+          schema:
+            type: integer
+          description: ID do cliente
+      responses:
+        200:
+          description: Lista de vendas retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  vendas:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        clienteId:
+                          type: integer
+                          example: 1
+                        vendedorId:
+                          type: integer
+                          example: 1
+                        dataVenda:
+                          type: string
+                          format: date-time
+                          example: "2024-01-15T10:30:00Z"
+                        total:
+                          type: number
+                          example: 52.50
+                        status:
+                          type: string
+                          example: "pendente"
+                        observacao:
+                          type: string
+                          example: "Venda realizada via movimentação"
+                        itens:
+                          type: array
+                          items:
+                            type: object
+                        cliente:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            nome:
+                              type: string
+                            email:
+                              type: string
+                        vendedor:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            nome:
+                              type: string
+                            matricula:
+                              type: string
+              example:
+                success: true
+                vendas:
+                  - id: 1
+                    clienteId: 1
+                    vendedorId: 1
+                    dataVenda: "2024-01-15T10:30:00Z"
+                    total: 52.50
+                    status: "pendente"
+                    observacao: "Venda realizada via movimentação"
+                    itens: []
+                    cliente:
+                      id: 1
+                      nome: "Cliente A"
+                      email: "cliente@email.com"
+                    vendedor:
+                      id: 1
+                      nome: "João Silva"
+                      matricula: "123"
+        401:
+          description: Não autorizado
+        500:
+          description: Erro interno no servidor
+
+  /api/vendas/{id}:
+    get:
+      summary: Buscar venda específica
+      tags:
+        - Vendas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da venda
+      responses:
+        200:
+          description: Venda encontrada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  venda:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clienteId:
+                        type: integer
+                        example: 1
+                      vendedorId:
+                        type: integer
+                        example: 1
+                      dataVenda:
+                        type: string
+                        format: date-time
+                        example: "2024-01-15T10:30:00Z"
+                      total:
+                        type: number
+                        example: 52.50
+                      status:
+                        type: string
+                        example: "pendente"
+                      observacao:
+                        type: string
+                        example: "Venda realizada via movimentação"
+                      itens:
+                        type: array
+                        items:
+                          type: object
+                      cliente:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          nome:
+                            type: string
+                          email:
+                            type: string
+                      vendedor:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          nome:
+                            type: string
+                          matricula:
+                            type: string
+              example:
+                success: true
+                venda:
+                  id: 1
+                  clienteId: 1
+                  vendedorId: 1
+                  dataVenda: "2024-01-15T10:30:00Z"
+                  total: 52.50
+                  status: "pendente"
+                  observacao: "Venda realizada via movimentação"
+                  itens: []
+                  cliente:
+                    id: 1
+                    nome: "Cliente A"
+                    email: "cliente@email.com"
+                  vendedor:
+                    id: 1
+                    nome: "João Silva"
+                    matricula: "123"
+        401:
+          description: Não autorizado
+        404:
+          description: Venda não encontrada
+        500:
+          description: Erro interno no servidor
+
+  /api/vendas/{id}/status:
+    patch:
+      summary: Atualizar status da venda
+      tags:
+        - Vendas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID da venda
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pendente, aprovada, cancelada]
+                  description: Novo status da venda
+              required:
+                - status
+      responses:
+        200:
+          description: Status da venda atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Status da venda atualizado com sucesso!"
+                  venda:
+                    type: object
+              example:
+                success: true
+                message: "Status da venda atualizado com sucesso!"
+                venda:
+                  id: 1
+                  status: "aprovada"
+        400:
+          description: Status inválido
+        401:
+          description: Não autorizado
+        404:
+          description: Venda não encontrada
+        500:
+          description: Erro interno no servidor 

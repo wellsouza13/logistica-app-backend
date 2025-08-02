@@ -41,10 +41,11 @@ model Estoque {
   quantidade  Int
   unidade     String
   localizacao String?
+  preco       Decimal? @db.Decimal(10, 2) // Preço unitário do produto
   criadoEm    DateTime @default(now())
   atualizadoEm DateTime @updatedAt
   
-  // Relacionamento com movimentações
+  // Relacionamentos
   movimentacoes MovimentacaoEstoque[]
   vendas        VendaItem[]
 }
@@ -64,31 +65,49 @@ model MovimentacaoEstoque {
   responsavel User     @relation(fields: [responsavelId], references: [id])
 }
 
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String?  @unique
+  telefone  String?
+  endereco  String?
+  criadoEm  DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  // Relacionamentos
+  vendas    Venda[]
+}
+
 model Venda {
   id          Int      @id @default(autoincrement())
+  clienteId   Int?
   vendedorId  Int
-  cliente     String
+  dataVenda   DateTime @default(now())
   total       Decimal  @db.Decimal(10, 2)
   status      String   @default("pendente") // pendente, aprovada, cancelada
-  dataVenda   DateTime @default(now())
   observacao  String?
-  
+  criadoEm    DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
   // Relacionamentos
-  vendedor    User        @relation(fields: [vendedorId], references: [id])
+  cliente     Cliente? @relation(fields: [clienteId], references: [id])
+  vendedor    User     @relation(fields: [vendedorId], references: [id])
   itens       VendaItem[]
   entrega     Entrega?
 }
 
 model VendaItem {
-  id        Int     @id @default(autoincrement())
-  vendaId   Int
-  estoqueId Int
-  quantidade Int
-  precoUnitario Decimal @db.Decimal(10, 2)
-  
+  id             Int      @id @default(autoincrement())
+  vendaId        Int
+  estoqueId      Int
+  quantidade     Int
+  precoUnitario  Decimal  @db.Decimal(10, 2)
+  subtotal       Decimal  @db.Decimal(10, 2)
+  criadoEm       DateTime @default(now())
+
   // Relacionamentos
-  venda     Venda   @relation(fields: [vendaId], references: [id])
-  estoque   Estoque @relation(fields: [estoqueId], references: [id])
+  venda          Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  estoque        Estoque  @relation(fields: [estoqueId], references: [id])
 }
 
 model Entrega {
