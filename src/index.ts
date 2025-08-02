@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes';
 import fluxoRoutes from './routes/fluxo.routes';
 import estoqueRoutes from './routes/estoque.routes';
 import movimentacaoRoutes from './routes/movimentacao.routes';
+import relatorioRoutes from './routes/relatorio.routes';
 
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger';
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/fluxo', fluxoRoutes);
 app.use('/api/estoque', estoqueRoutes);
 app.use('/api/movimentacao', movimentacaoRoutes);
+app.use('/api/relatorios', relatorioRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -17,9 +17,15 @@ model User {
   id        Int     @id @default(autoincrement())
   matricula String  @unique
   senha     String
+  nome      String?
+  cargo     String  @default("usuario") // admin, vendedor, motorista, gerente
+  ativo     Boolean @default(true)
+  criadoEm  DateTime @default(now())
   
-  // Relacionamento com movimentações
+  // Relacionamentos
   movimentacoes MovimentacaoEstoque[]
+  vendas        Venda[]
+  entregas      Entrega[]
 }
 
 model Fluxo {
@@ -40,6 +46,7 @@ model Estoque {
   
   // Relacionamento com movimentações
   movimentacoes MovimentacaoEstoque[]
+  vendas        VendaItem[]
 }
 
 model MovimentacaoEstoque {
@@ -55,4 +62,48 @@ model MovimentacaoEstoque {
   // Relacionamentos
   estoque     Estoque  @relation(fields: [estoqueId], references: [id])
   responsavel User     @relation(fields: [responsavelId], references: [id])
+}
+
+model Venda {
+  id          Int      @id @default(autoincrement())
+  vendedorId  Int
+  cliente     String
+  total       Decimal  @db.Decimal(10, 2)
+  status      String   @default("pendente") // pendente, aprovada, cancelada
+  dataVenda   DateTime @default(now())
+  observacao  String?
+  
+  // Relacionamentos
+  vendedor    User        @relation(fields: [vendedorId], references: [id])
+  itens       VendaItem[]
+  entrega     Entrega?
+}
+
+model VendaItem {
+  id        Int     @id @default(autoincrement())
+  vendaId   Int
+  estoqueId Int
+  quantidade Int
+  precoUnitario Decimal @db.Decimal(10, 2)
+  
+  // Relacionamentos
+  venda     Venda   @relation(fields: [vendaId], references: [id])
+  estoque   Estoque @relation(fields: [estoqueId], references: [id])
+}
+
+model Entrega {
+  id          Int      @id @default(autoincrement())
+  vendaId     Int      @unique
+  motoristaId Int
+  endereco    String
+  regiao      String?
+  status      String   @default("pendente") // pendente, em_transito, entregue, cancelada
+  dataEntrega DateTime?
+  avaliacao   Int?     // 1-5 estrelas
+  observacao  String?
+  criadoEm    DateTime @default(now())
+  
+  // Relacionamentos
+  venda       Venda   @relation(fields: [vendaId], references: [id])
+  motorista   User    @relation(fields: [motoristaId], references: [id])
 }

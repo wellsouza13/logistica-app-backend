@@ -1,0 +1,369 @@
+paths:
+  /api/relatorios/geral:
+    get:
+      summary: Relatório geral do sistema (Dashboard)
+      tags:
+        - Relatórios
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Relatório geral retornado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  relatorio:
+                    type: object
+                    properties:
+                      totalVendas:
+                        type: integer
+                        example: 150
+                      totalEntregas:
+                        type: integer
+                        example: 89
+                      itensEstoque:
+                        type: integer
+                        example: 45
+                      usuariosAtivos:
+                        type: integer
+                        example: 12
+                      receitaMensal:
+                        type: number
+                        example: 25000
+                      produtosMaisVendidos:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            produto:
+                              type: string
+                              example: "Produto A"
+                            quantidade:
+                              type: integer
+                              example: 25
+                            receita:
+                              type: number
+                              example: 5000
+                      entregasPorStatus:
+                        type: object
+                        properties:
+                          pendente:
+                            type: integer
+                            example: 15
+                          em_transito:
+                            type: integer
+                            example: 8
+                          entregue:
+                            type: integer
+                            example: 66
+              example:
+                success: true
+                relatorio:
+                  totalVendas: 150
+                  totalEntregas: 89
+                  itensEstoque: 45
+                  usuariosAtivos: 12
+                  receitaMensal: 25000
+                  produtosMaisVendidos:
+                    - produto: "Produto A"
+                      quantidade: 25
+                      receita: 5000
+                  entregasPorStatus:
+                    pendente: 15
+                    em_transito: 8
+                    entregue: 66
+        401:
+          description: Não autorizado
+        500:
+          description: Erro interno no servidor
+
+  /api/relatorios/vendas:
+    get:
+      summary: Relatório de vendas
+      tags:
+        - Relatórios
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: periodo
+          in: query
+          schema:
+            type: string
+            format: date
+            example: "2024-01"
+          description: Período no formato YYYY-MM
+        - name: vendedor
+          in: query
+          schema:
+            type: integer
+          description: ID do vendedor para filtrar
+      responses:
+        200:
+          description: Relatório de vendas retornado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  relatorio:
+                    type: object
+                    properties:
+                      vendasPorPeriodo:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            data:
+                              type: string
+                              example: "2024-01-15"
+                            quantidade:
+                              type: integer
+                              example: 5
+                            receita:
+                              type: number
+                              example: 1000
+                      produtosMaisVendidos:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            produto:
+                              type: string
+                              example: "Produto A"
+                            quantidade:
+                              type: integer
+                              example: 25
+                            receita:
+                              type: number
+                              example: 5000
+                      vendedoresTop:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            vendedor:
+                              type: string
+                              example: "João Silva"
+                            vendas:
+                              type: integer
+                              example: 15
+                            receita:
+                              type: number
+                              example: 3000
+                      receitaPorMes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            mes:
+                              type: string
+                              example: "Janeiro"
+                            receita:
+                              type: number
+                              example: 25000
+              example:
+                success: true
+                relatorio:
+                  vendasPorPeriodo:
+                    - data: "2024-01-15"
+                      quantidade: 5
+                      receita: 1000
+                  produtosMaisVendidos:
+                    - produto: "Produto A"
+                      quantidade: 25
+                      receita: 5000
+                  vendedoresTop:
+                    - vendedor: "João Silva"
+                      vendas: 15
+                      receita: 3000
+                  receitaPorMes:
+                    - mes: "Janeiro"
+                      receita: 25000
+        401:
+          description: Não autorizado
+        500:
+          description: Erro interno no servidor
+
+  /api/relatorios/entregas:
+    get:
+      summary: Relatório de entregas
+      tags:
+        - Relatórios
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pendente, em_transito, entregue, cancelada]
+          description: Status da entrega para filtrar
+        - name: motorista
+          in: query
+          schema:
+            type: integer
+          description: ID do motorista para filtrar
+      responses:
+        200:
+          description: Relatório de entregas retornado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  relatorio:
+                    type: object
+                    properties:
+                      entregasPorStatus:
+                        type: object
+                        properties:
+                          pendente:
+                            type: integer
+                            example: 15
+                          em_transito:
+                            type: integer
+                            example: 8
+                          entregue:
+                            type: integer
+                            example: 66
+                          cancelada:
+                            type: integer
+                            example: 3
+                      tempoMedioEntrega:
+                        type: string
+                        example: "2.5 dias"
+                      entregasPorRegiao:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            regiao:
+                              type: string
+                              example: "Centro"
+                            quantidade:
+                              type: integer
+                              example: 25
+                            tempoMedio:
+                              type: string
+                              example: "1.8 dias"
+                      motoristasTop:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            motorista:
+                              type: string
+                              example: "Pedro Santos"
+                            entregas:
+                              type: integer
+                              example: 45
+                            avaliacao:
+                              type: number
+                              example: 4.8
+              example:
+                success: true
+                relatorio:
+                  entregasPorStatus:
+                    pendente: 15
+                    em_transito: 8
+                    entregue: 66
+                    cancelada: 3
+                  tempoMedioEntrega: "2.5 dias"
+                  entregasPorRegiao:
+                    - regiao: "Centro"
+                      quantidade: 25
+                      tempoMedio: "1.8 dias"
+                  motoristasTop:
+                    - motorista: "Pedro Santos"
+                      entregas: 45
+                      avaliacao: 4.8
+        401:
+          description: Não autorizado
+        500:
+          description: Erro interno no servidor
+
+  /api/relatorios/usuarios:
+    get:
+      summary: Relatório de usuários
+      tags:
+        - Relatórios
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Relatório de usuários retornado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  relatorio:
+                    type: object
+                    properties:
+                      totalUsuarios:
+                        type: integer
+                        example: 25
+                      usuariosAtivos:
+                        type: integer
+                        example: 20
+                      usuariosPorCargo:
+                        type: object
+                        properties:
+                          admin:
+                            type: integer
+                            example: 3
+                          vendedor:
+                            type: integer
+                            example: 12
+                          motorista:
+                            type: integer
+                            example: 8
+                          gerente:
+                            type: integer
+                            example: 2
+                      usuariosRecentes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            nome:
+                              type: string
+                              example: "Maria Silva"
+                            cargo:
+                              type: string
+                              example: "Vendedor"
+                            dataCadastro:
+                              type: string
+                              example: "2024-01-15"
+              example:
+                success: true
+                relatorio:
+                  totalUsuarios: 25
+                  usuariosAtivos: 20
+                  usuariosPorCargo:
+                    admin: 3
+                    vendedor: 12
+                    motorista: 8
+                    gerente: 2
+                  usuariosRecentes:
+                    - nome: "Maria Silva"
+                      cargo: "Vendedor"
+                      dataCadastro: "2024-01-15"
+        401:
+          description: Não autorizado
+        500:
+          description: Erro interno no servidor 
