@@ -25,3 +25,13 @@ model Fluxo {
   veiculoId   String
   iniciadoEm  DateTime @default(now())
 }
+
+model Estoque {
+  id          Int      @id @default(autoincrement())
+  produto     String
+  quantidade  Int
+  unidade     String
+  localizacao String?
+  criadoEm    DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+}

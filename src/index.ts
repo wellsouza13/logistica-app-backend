@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import authRoutes from './routes/auth.routes';
 import fluxoRoutes from './routes/fluxo.routes';
+import estoqueRoutes from './routes/estoque.routes';
 
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger';
@@ -20,6 +21,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Rotas da API
 app.use('/api/auth', authRoutes);
 app.use('/api/fluxo', fluxoRoutes);
+app.use('/api/estoque', estoqueRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
